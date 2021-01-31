@@ -29,7 +29,7 @@ class SurveyScreen extends React.Component {
       this.state.SurveyId = serverData.sId;
       this.state.SurveyQuestions = SurveyScreenShared.convertServerDataToSurvey(this, serverData.question);
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
-      this.state.Password = navigation.getParam('username', 'Unable to find user data');
+      this.state.Password = navigation.getParam('password', 'Unable to find user data');
       PushNotificationIOS.requestPermissions();
     }
 

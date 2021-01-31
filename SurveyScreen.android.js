@@ -36,7 +36,7 @@ class SurveyScreen extends React.Component {
       this.state.SurveyId = serverData.sId;
       this.state.SurveyQuestions = SurveyScreenShared.convertServerDataToSurvey(this, serverData.question);
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
-      this.state.Password = navigation.getParam('username', 'Unable to find user data');
+      this.state.Password = navigation.getParam('password', 'Unable to find user data');
       console.log("========================= USERNAME: " + this.state.Username);
     }
 
@@ -49,7 +49,7 @@ class SurveyScreen extends React.Component {
         // (required) Called when a remote or local notification is opened or received
         onNotification: function(notification) {
           RNRestart.Restart();
-          this.props.navigation.push('Survey', {serverData: responseJson, username: this.state.username, password: this.state.password});
+          //this.props.navigation.push('Survey', {serverData: responseJson, username: this.state.username, password: this.state.password});
           //console.log("NOTIFICATION:", notification);
         },
         // Should the initial notification be popped automatically
@@ -60,7 +60,8 @@ class SurveyScreen extends React.Component {
          * - Specified if permissions (ios) and token (android and ios) will requested or not,
          * - if not, you must call PushNotificationsHandler.requestPermissions() later
          */
-        requestPermissions: true
+        //requestPermissions: true,
+        requestPermissions: Platform.OS === 'ios',
       });
 
       // Expo push notifications
