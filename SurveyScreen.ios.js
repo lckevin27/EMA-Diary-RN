@@ -117,7 +117,7 @@ class SurveyScreen extends React.Component {
                         maximumTrackTintColor='#d3d3d3' 
                         minimumTrackTintColor='rgb(252, 228, 149)'
                     />
-                    <View style={styles.textCon}>
+                    {/* <View style={styles.textCon}>
                         { this.state.CatAnswers.length > 0 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text> : null}
                         { this.state.CatAnswers.length > 1 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 1)}</Text> : null}
                         { this.state.CatAnswers.length > 2 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 2)}</Text> : null}
@@ -126,6 +126,11 @@ class SurveyScreen extends React.Component {
                         { this.state.CatAnswers.length > 5 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 5)}</Text> : null}
                         { this.state.CatAnswers.length > 6 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 6)}</Text> : null}
                         
+                    </View>  */}
+                    <View style={styles.textCon}>
+                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text>
+                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, this.state.catValue)}</Text>
+                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, this.state.CatAnswers.length - 1)}</Text>
                     </View> 
                   </View> : null
                   }

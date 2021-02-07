@@ -149,29 +149,30 @@ class SurveyScreen extends React.Component {
                   }
 
                   {this.state.ShowCatSlider ? 
-                    <View style={styles.container}>
-                    <Slider
-                        style={{ width: 300}}
-                        step={1}
-                        minimumValue={this.state.catMinValue}
-                        maximumValue={this.state.catMaxValue}
-                        value={this.state.catValue}
-                        onValueChange={val => {SurveyScreenShared.updateCatSlider(this, val); }}
-                        thumbTintColor='rgb(252, 228, 149)'
-                        maximumTrackTintColor='#d3d3d3' 
-                        minimumTrackTintColor='rgb(252, 228, 149)'
-                    />
-                    <View style={styles.textCon}>
-                        { this.state.CatAnswers.length > 0 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text> : null}
-                        { this.state.CatAnswers.length > 1 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 1)}</Text> : null}
-                        { this.state.CatAnswers.length > 2 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 2)}</Text> : null}
-                        { this.state.CatAnswers.length > 3 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 3)}</Text> : null}
-                        { this.state.CatAnswers.length > 4 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 4)}</Text> : null}
-                        { this.state.CatAnswers.length > 5 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 5)}</Text> : null}
-                        { this.state.CatAnswers.length > 6 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 6)}</Text> : null}
-                        
-                    </View> 
-                  </View> : null
+                    <View>
+                      <Text style={{marginLeft: "9%"}}>{"Value: " + this.state.CatAnswers[this.state.catValue]}</Text> 
+                      <View style={styles.container}>
+                        <Slider
+                            style={{ width: 300}}
+                            step={1}
+                            minimumValue={this.state.catMinValue}
+                            maximumValue={this.state.catMaxValue}
+                            value={this.state.catValue}
+                            onValueChange={val => {SurveyScreenShared.updateCatSlider(this, val); }}
+                            thumbTintColor='rgb(252, 228, 149)'
+                            maximumTrackTintColor='#d3d3d3' 
+                            minimumTrackTintColor='rgb(252, 228, 149)'
+                        />
+
+                        <View style={styles.textCon}>
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text>
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, Math.ceil(this.state.CatAnswers.length / 2) - 1)}</Text>
+                            {this.state.CatAnswers.length % 2 == 0 ? <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, Math.ceil(this.state.CatAnswers.length / 2))}</Text> : null}
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, this.state.CatAnswers.length - 1)}</Text>
+                        </View>
+                      </View> 
+                      
+                    </View>: null
                   }
 
                     {this.state.ViewArray.map(info => info)}
@@ -217,7 +218,8 @@ const styles = StyleSheet.create({
     },
 
     container: {
-      flex: 1,
+      //flex: 1,
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#fff',
@@ -226,11 +228,22 @@ const styles = StyleSheet.create({
         width: 320,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        textAlign: 'justify',
+        alignItems: 'flex-end',
         marginTop: 20,
+        marginBottom: 8
     },
     colorGrey: {
         color: '#d3d3d3',
-        transform: [{ rotate: '-90deg'}]
+        //transform: [{ rotate: '-45deg'}],
+        transform: [{ rotate: '-90deg'}],
+        overflow: 'hidden',
+        width: 82,
+        //margin: 5
+
+        
+        
+        //marginBottom: 35
     },
     colorYellow: {
         color: 'rgb(252, 228, 149)',

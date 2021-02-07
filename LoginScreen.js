@@ -98,8 +98,8 @@ class LoginScreen extends React.Component {
 
 
     // ========================= Get server data ========================== //
-    //fetch('http://192.168.20.9:3000/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
-    fetch('https://emad-uwa5206.herokuapp.com/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
+    fetch('http://192.168.20.7:3000/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
+    //fetch('https://emad-uwa5206.herokuapp.com/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
       .then((response) => response.json())
         .then((responseJson) => {
 
@@ -117,18 +117,18 @@ class LoginScreen extends React.Component {
           }
 
           this.state.showModal = false;
-          this.forceUpdate();
+          
 
           // Go to next screen with data
           console.log(responseJson);
           this.props.navigation.push('Survey', {serverData: responseJson, username: this.state.username, password: this.state.password});
+          this.forceUpdate();
 
         }).catch((error) => {
         // ============= on failure ============== //
         this.state.error = true;
         this.state.showModal = false;
         this.forceUpdate();
-
         console.error(error);
     }
     );
