@@ -10,6 +10,7 @@ import {
     TextInput,
     Button,
     Switch,
+    ActivityIndicator
   } from 'react-native';
 import Modal from 'react-native-modal';
 import { withNavigation } from 'react-navigation';
@@ -28,7 +29,7 @@ class LoginScreen extends React.Component {
       error: false,
       rememberCredentials: true,
       checked: true,
-      showModal: false,
+      showLoadingModal: false,
     }
   }
 
@@ -78,8 +79,20 @@ class LoginScreen extends React.Component {
 
   login() {
 
-    this.state.showModal = true;
+    this.state.showLoadingModal = true;
     this.forceUpdate();
+
+    // Remember recredentials
+    if (this.state.rememberCredentials) {
+      // store user credentials
+      let user = {username: this.state.username, password: this.state.password, saveCredentials: this.state.rememberCredentials};
+      this.storeCredentials(user);
+    }
+    else {
+      // erase user credentials
+      let user = {username: "", password: "", saveCredentials: this.state.rememberCredentials};
+      this.storeCredentials(user);
+    }
 
     // User data query
     let data = {
@@ -93,30 +106,16 @@ class LoginScreen extends React.Component {
           'Content-Type': 'application/json',
       }
     }
-
     console.log(data);
 
-
     // ========================= Get server data ========================== //
-    fetch('http://192.168.20.7:3000/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
-    //fetch('https://emad-uwa5206.herokuapp.com/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
+    //fetch('http://192.168.20.7:3000/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
+    fetch('https://emad-uwa5206.herokuapp.com/user-login', data) // https://emad-cits5206-2.herokuapp.com/user-login
       .then((response) => response.json())
         .then((responseJson) => {
 
           // ============= on success ============== //
-          // Remember recredentials
-          if (this.state.rememberCredentials) {
-            // store user credentials
-            let user = {username: this.state.username, password: this.state.password, saveCredentials: this.state.rememberCredentials};
-            this.storeCredentials(user);
-          }
-          else {
-            // erase user credentials
-            let user = {username: "", password: "", saveCredentials: this.state.rememberCredentials};
-            this.storeCredentials(user);
-          }
-
-          this.state.showModal = false;
+          this.state.showLoadingModal = false;
           
 
           // Go to next screen with data
@@ -127,7 +126,7 @@ class LoginScreen extends React.Component {
         }).catch((error) => {
         // ============= on failure ============== //
         this.state.error = true;
-        this.state.showModal = false;
+        this.state.showLoadingModal = false;
         this.forceUpdate();
         console.error(error);
     }
@@ -147,7 +146,7 @@ class LoginScreen extends React.Component {
               <View style={{flex: 1, flexDirection: 'column', justifyContent:'space-between'}}>
               <View style={{ height: 25, }}></View>
   
-                <Image source={{uri: 'https://www.courseseeker.edu.au/assets/images/institutions/1055.png'}} style={{width: 330, height: 110,  margin: 5,}} />
+                <Image source={{uri: 'https://www.courseseeker.edu.au/assets/images/institutions/1055.png'}} style={{width: 330, height: 110,  margin: 5,}} resizeMode="contain" />
   
                 <View>
                   <View style={{ height: 50, }}></View>
@@ -174,11 +173,11 @@ class LoginScreen extends React.Component {
                   </View> 
                 </View>
 
-                {/* { this.state.showModal ? */}
                 <View>
-                  <Modal isVisible={this.state.showModal}>
+                  <Modal isVisible={this.state.showLoadingModal}>
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                       <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
+                        <ActivityIndicator size="large" color="#00ff00" />
                         <Text>Logging in...</Text>
                       </View>
                       

@@ -11,11 +11,13 @@ import {
     TextInput,
     Dimensions,
     Switch,
+    ActivityIndicator
   } from 'react-native';
 import {  Divider, Button, Slider } from 'react-native-elements';
 import RadioForm from 'react-native-simple-radio-button';
 import RNRestart from 'react-native-restart'; 
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import Modal from 'react-native-modal';
 
 class SurveyScreen extends React.Component {
     constructor(props) {
@@ -64,7 +66,7 @@ class SurveyScreen extends React.Component {
     
                   <View style={{ height: 50, }}></View>
                   <View style={styles.body}>
-                  {this.state.ShowAlternateQuestion ? <Text style={styles.sectionTitle}>{this.state.CurrentQuestion}</Text> : null}
+                  {this.state.ShowAlternateQuestion ? <Text style={styles.sectionTitle}>{this.state.CurrentQuestionText}</Text> : null}
 
                   {this.state.IsCheckboxQuestion? 
                       <View style={{flex: 1, flexDirection: 'column', justifyContent:'center'}}>
@@ -105,35 +107,43 @@ class SurveyScreen extends React.Component {
                   }
 
                   {this.state.ShowCatSlider ? 
-                    <View style={styles.container}>
-                    <Slider
-                        style={{ width: 300}}
-                        step={1}
-                        minimumValue={this.state.catMinValue}
-                        maximumValue={this.state.catMaxValue}
-                        value={this.state.catValue}
-                        onValueChange={val => {SurveyScreenShared.updateCatSlider(this, val); }}
-                        thumbTintColor='rgb(252, 228, 149)'
-                        maximumTrackTintColor='#d3d3d3' 
-                        minimumTrackTintColor='rgb(252, 228, 149)'
-                    />
-                    {/* <View style={styles.textCon}>
-                        { this.state.CatAnswers.length > 0 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text> : null}
-                        { this.state.CatAnswers.length > 1 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 1)}</Text> : null}
-                        { this.state.CatAnswers.length > 2 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 2)}</Text> : null}
-                        { this.state.CatAnswers.length > 3 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 3)}</Text> : null}
-                        { this.state.CatAnswers.length > 4 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 4)}</Text> : null}
-                        { this.state.CatAnswers.length > 5 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 5)}</Text> : null}
-                        { this.state.CatAnswers.length > 6 ? <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 6)}</Text> : null}
-                        
-                    </View>  */}
-                    <View style={styles.textCon}>
-                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text>
-                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, this.state.catValue)}</Text>
-                        <Text style={styles.colorGrey}>{SurveyScreenShared.GetCatSliderOption(this, this.state.CatAnswers.length - 1)}</Text>
-                    </View> 
-                  </View> : null
+                    <View>
+                      <Text style={{marginLeft: "9%"}}>{"Value: " + this.state.CatAnswers[this.state.catValue]}</Text> 
+                      <View style={styles.container}>
+                        <Slider
+                            style={{ width: 300}}
+                            step={1}
+                            minimumValue={this.state.catMinValue}
+                            maximumValue={this.state.catMaxValue}
+                            value={this.state.catValue}
+                            onValueChange={val => {SurveyScreenShared.updateCatSlider(this, val); }}
+                            thumbTintColor='rgb(252, 228, 149)'
+                            maximumTrackTintColor='#d3d3d3' 
+                            minimumTrackTintColor='rgb(252, 228, 149)'
+                        />
+
+                        <View style={styles.textCon}>
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, 0)}</Text>
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, Math.ceil(this.state.CatAnswers.length / 2) - 1)}</Text>
+                            {this.state.CatAnswers.length % 2 == 0 ? <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, Math.ceil(this.state.CatAnswers.length / 2))}</Text> : null}
+                            <Text style={styles.colorGrey} numberOfLines={1}>{SurveyScreenShared.GetCatSliderOption(this, this.state.CatAnswers.length - 1)}</Text>
+                        </View>
+                      </View> 
+                      
+                    </View>: null
                   }
+
+                  <View>
+                    <Modal isVisible={this.state.showLoadingModal}>
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
+                          <ActivityIndicator size="large" color="#00ff00" />
+                          <Text>Logging in...</Text>
+                        </View>
+                        
+                      </View>
+                    </Modal>
+                  </View> 
 
                     {this.state.ViewArray.map(info => info)}
                   </View>
@@ -150,51 +160,63 @@ class SurveyScreen extends React.Component {
 export default SurveyScreen;
 
 const styles = StyleSheet.create({
-    scrollView: {
-      backgroundColor: '#FFF',
-    },
-    body: {
-      backgroundColor: '#FFF',
-      textAlignVertical: 'center'
-    },
-    sectionTitle: {
-      fontSize: 20,
-      fontWeight: '600',
-      color: '#000',
-      marginBottom: 15,
-      marginHorizontal: 20,
-    },
-    sectionDescription: {
-      marginTop: 8,
-      fontSize: 18,
-      fontWeight: '400',
-      color: '#444',
-    },
-    checkboxStyle: {
-      flex: 1, 
-      flexDirection: 'row', 
-      marginVertical: 5, 
-      marginHorizontal: 20
-    },
+  scrollView: {
+    backgroundColor: '#FFF',
+  },
+  body: {
+    backgroundColor: '#FFF',
+    textAlignVertical: 'center'
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 15,
+    marginHorizontal: 20,
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#444',
+  },
+  checkboxStyle: {
+    flex: 1, 
+    flexDirection: 'row', 
+    marginVertical: 5, 
+    marginHorizontal: 20
+  },
 
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-    },
-    textCon: {
-        width: 320,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    colorGrey: {
-        color: '#d3d3d3',
-        transform: [{ rotate: '-90deg'}]
-    },
-    colorYellow: {
-        color: 'rgb(252, 228, 149)',
-        transform: [{ rotate: '-90deg'}]
-    }
-  });
+  container: {
+    //flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  textCon: {
+      width: 320,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      textAlign: 'justify',
+      alignItems: 'flex-end',
+      marginTop: 20,
+      marginBottom: 8
+  },
+  colorGrey: {
+      color: '#d3d3d3',
+      //transform: [{ rotate: '-45deg'}],
+      transform: [{ rotate: '-90deg'}],
+      overflow: 'hidden',
+      width: 82,
+      //margin: 5
+
+      
+      
+      //marginBottom: 35
+  },
+  colorYellow: {
+      color: 'rgb(252, 228, 149)',
+      transform: [{ rotate: '-90deg'}]
+  }
+});

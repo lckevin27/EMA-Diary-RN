@@ -11,11 +11,13 @@ import {
     TextInput,
     Dimensions,
     Switch,
+    ActivityIndicator
   } from 'react-native';
 var PushNotification = require("react-native-push-notification");
 import {  Divider, Button, Slider } from 'react-native-elements';
 import RadioForm from 'react-native-simple-radio-button';
 import RNRestart from 'react-native-restart'; 
+import Modal from 'react-native-modal';
 
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
@@ -108,7 +110,7 @@ class SurveyScreen extends React.Component {
     
                   <View style={{ height: 50, }}></View>
                   <View style={styles.body}>
-                  {this.state.ShowAlternateQuestion ? <Text style={styles.sectionTitle}>{this.state.CurrentQuestion}</Text> : null}
+                  {this.state.ShowAlternateQuestion ? <Text style={styles.sectionTitle}>{this.state.CurrentQuestionText}</Text> : null}
 
                   {this.state.IsCheckboxQuestion? 
                       <View style={{flex: 1, flexDirection: 'column', justifyContent:'center'}}>
@@ -174,6 +176,17 @@ class SurveyScreen extends React.Component {
                       
                     </View>: null
                   }
+
+                  <View>
+                    <Modal isVisible={this.state.showLoadingModal}>
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
+                          <ActivityIndicator size="large" color="#00ff00" />
+                          <Text>Loading...</Text>
+                        </View>
+                      </View>
+                    </Modal>
+                  </View> 
 
                     {this.state.ViewArray.map(info => info)}
                   </View>

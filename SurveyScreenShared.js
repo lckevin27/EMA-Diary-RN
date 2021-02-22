@@ -9,9 +9,11 @@ import {
     TextInput,
     Dimensions,
     Switch,
+    ActivityIndicator
   } from 'react-native';
   import {  Divider, Button, Slider } from 'react-native-elements';
   import RadioForm from 'react-native-simple-radio-button';
+import { createIconSetFromFontello } from 'react-native-vector-icons';
 
 
 export const SurveyScreenShared =
@@ -26,9 +28,11 @@ export const SurveyScreenShared =
       return {
           ViewArray: [],
           CurrentQuestionIndex: -1,
-          CurrentQuestion: "",
+          CurrentQuestion: null,
+          CurrentQuestionText: "",
           SurveyQuestions: sampleSurveyQuestions,
           currentAnswers: [],
+          pendingQuestionIds: [],
           Answers: {
   
           },
@@ -38,6 +42,7 @@ export const SurveyScreenShared =
           screenHeight: Dimensions.get('window').height,
           ShowAlternateQuestion: false,
           ForceAnswer: false,
+          showLoadingModal: false,
           // ============ Checkbox ========== //
           IsCheckboxQuestion: true,
           Checkboxes: [], 
@@ -181,76 +186,20 @@ export const SurveyScreenShared =
         return SurveyQuestions;
     },
 
-    // convertServerDataToSurvey : function(serverData)
-    // {
-    //     // Clear default survey questions
-    //     var SurveyQuestions = [];
-    //     var SurveyTitle = serverData.title;
-  
-    //     for (var i = 0; i < serverData.questions.length; i++)
-    //     {
-    //       let SQ = serverData.questions[i];
-  
-    //       // Create list of answers
-    //       let answers = [];
-    //       for (var j = 0; j < SQ.content.length; j++) {
-    //         let SQans = SQ.content[j];
-  
-    //         // Create list of followups
-    //         let SQFollowupAns = []
-            
-    //         let hasFollowup = SQans.followUp.title != null;
-    //         if (hasFollowup) {
-    //           if (SQans.followUp.type == "text") {
-  
-    //           }
-    //           else {
-    //             for (var k = 0; k < SQans.followUp.content.length; k++) {
-    //               let SQFollowup = SQans.followUp.content[k];
-    //               let followUpAns = {
-    //                 Answer: SQFollowup.title,
-    //                 Followup: null
-    //               }
-    //               SQFollowupAns.push(followUpAns);
-    //             }
-    //           }
-    //        }
-  
-    //         let SQFollowup = hasFollowup ? {
-    //           Question: SQans.followUp.title,
-    //           Type: SQans.followUp.type,
-    //           Answers: SQFollowupAns
-    //         } : null;
-  
-    //         // =======================================
-    //         let ansObj = {
-    //           Answer: SQans.title,
-    //           Followup: SQFollowup
-    //         }
-  
-    //         answers.push(ansObj);
-    //       }
-  
-    //       let SurveyQuestion = { 
-    //         Question: SQ.title,
-    //         Type: SQ.type,
-    //         Answers: answers
-    //        };
-    //       SurveyQuestions.push(SurveyQuestion);
-    //     }
-
-    //     return SurveyQuestions;
-    // },
-
     loadNextQuestion : async function(context, state, goBackwards = false) {
         context.state.ViewArray = []
         context.state.IsCheckboxQuestion = false;
         context.state.ShowAlternateQuestion = false;
         context.state.ShowSlider = false;
         context.state.sliderValue = 0;
+        context.state.ShowCatSlider = false;
 
         if (goBackwards) context.state.CurrentQuestionIndex--;
         else context.state.CurrentQuestionIndex++;
+
+        // Disable loading modal
+        context.state.showLoadingModal = false;
+        context.forceUpdate();
 
         console.log("Current Index: " + context.state.CurrentQuestionIndex);
         console.log("Current Question: ");
@@ -258,7 +207,10 @@ export const SurveyScreenShared =
         let currentQuestion = context.state.SurveyQuestions[context.state.CurrentQuestionIndex];
         context.state.currentAnswers = [];
 
-        context.state.CurrentQuestion = currentQuestion.Question;
+        context.state.CurrentQuestion = currentQuestion;
+        context.state.CurrentQuestionText = currentQuestion.Question;
+        console.log("================================== current question");
+        console.log(currentQuestion);
         context.state.ForceAnswer = (context.state.CurrentQuestion.Compulsory !== undefined) ? context.state.CurrentQuestion.Compulsory : true;
         let surveyAnswers = currentQuestion.Answers;
 
@@ -324,7 +276,7 @@ export const SurveyScreenShared =
                                           onChangeText={(text) => {
                                             context.state.Answers[currentQuestion.Question] = text;
                                             console.log(text);
-                                            this.toggleNextButton(context, text !== "");
+                                            this.toggleNextButton(context, text != "");
                                           }
                                           } />)
         }
@@ -373,6 +325,14 @@ export const SurveyScreenShared =
         }
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 35, marginHorizontal: 25 }} />);
 
+        // // Append followup to question if available
+        // if (context.state.currentQuestion.FollowUp !== undefined) {
+
+        //   context.state.pendingQuestionIds.push(context.state.currentQuestion.FollowUp);
+
+        // }
+
+
 
           // ================================= LOAD NEXT / BACK BUTTONS ==================================== //
           // ======================== Last Question, Show Submit Button ========================= //
@@ -396,11 +356,46 @@ export const SurveyScreenShared =
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
                 { 
+                  // Show loading screen
+                  context.state.showLoadingModal = true;
+                  context.forceUpdate();
 
                   // If theres no next question locally
                   if ((context.state.CurrentQuestionIndex + 1) === context.state.SurveyQuestions.length)  {
 
-                    let GFQresponse = await this.getFollowupQuestion(context, context.state.currentAnswers);
+                    var answerFollowup;
+                    var questionFollowUp;
+
+                    // Find followup in answer
+                    for (var i = 0; i < context.state.currentAnswers.length; i++) {
+                      let answer = context.state.currentAnswers[i];
+                      if (answer.FollowUp == null) continue;
+                      else { answerFollowup = answer; break; }
+                    }
+                    console.log("============================= Answer Follow Up: " + answerFollowup)
+                    // Find followup in question
+                    questionFollowUp = context.state.CurrentQuestion.FollowUp;
+                    console.log("============================= Question Follow Up: " + questionFollowUp)
+                    
+                    let GFQresponse;
+                    if (answerFollowup === undefined || answerFollowup.FollowUp === undefined) {
+                      
+                      if (questionFollowUp === undefined || questionFollowUp === null) {
+                          GFQresponse = await this.getFollowupQuestion(context, context.state.pendingQuestionIds.pop());
+                      }
+                      else {
+                        GFQresponse = await this.getFollowupQuestion(context, questionFollowUp);
+                      }
+
+                    }
+                    else {
+                      if (questionFollowUp !== undefined || questionFollowUp !== null) {
+                        context.state.pendingQuestionIds.push(questionFollowUp);
+                      }
+                      GFQresponse = await this.getFollowupQuestion(context, answerFollowup.FollowUp);
+                    }
+
+                    
                     console.log("Has followup question: " + GFQresponse.hasFollowup);
                     if (GFQresponse.hasFollowup) {
                       this.loadNextQuestion(context, context.state);
@@ -447,11 +442,44 @@ export const SurveyScreenShared =
             <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, context.state, true)}/>
             <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
                 { 
-                  
-                  if ((context.state.CurrentQuestionIndex + 1) === context.state.SurveyQuestions.length)  {
-                  //if (typeof context.state.SurveyQuestions[context.state.CurrentQuestionIndex + 1] === undefined) {
+                  // Show loading screen
+                  context.state.showLoadingModal = true;
+                  context.forceUpdate();
 
-                    let GFQresponse = await this.getFollowupQuestion(context, context.state.currentAnswers);
+                  // If theres no next question locally
+                  if ((context.state.CurrentQuestionIndex + 1) === context.state.SurveyQuestions.length)  {
+
+                    var answerFollowup;
+                    var questionFollowUp;
+
+                    // Find followup in answer
+                    for (var i = 0; i < context.state.currentAnswers.length; i++) {
+                      let answer = context.state.currentAnswers[i];
+                      if (answer.FollowUp == null) continue;
+                      else { answerFollowup = answer; break; }
+                    }
+                    // Find followup in question
+                    questionFollowUp = context.state.CurrentQuestion.FollowUp;
+                    
+                    let GFQresponse;
+                    if (answerFollowup === undefined || answerFollowup.FollowUp === undefined) {
+                      
+                      if (questionFollowUp === undefined || questionFollowUp === null) {
+                          GFQresponse = await this.getFollowupQuestion(context, context.state.pendingQuestionIds.pop());
+                      }
+                      else {
+                        GFQresponse = await this.getFollowupQuestion(context, questionFollowUp);
+                      }
+
+                    }
+                    else {
+                      if (questionFollowUp !== undefined || questionFollowUp !== null) {
+                        context.state.pendingQuestionIds.push(questionFollowUp);
+                      }
+                      GFQresponse = await this.getFollowupQuestion(context, answerFollowup.FollowUp);
+                    }
+
+                    
                     console.log("Has followup question: " + GFQresponse.hasFollowup);
                     if (GFQresponse.hasFollowup) {
                       this.loadNextQuestion(context, context.state);
@@ -461,7 +489,7 @@ export const SurveyScreenShared =
                       if (GFQresponse.msg == "Timer has started.") {
                         console.log("Has follow up, timer started");
                         console.log("Submitting data...");
-                        this.submitData(context, GNGQresponse.msg);
+                        this.submitData(context, GFQresponse.msg);
                       }
                       else {
                         // find next question
@@ -478,15 +506,14 @@ export const SurveyScreenShared =
                       }
                       
                     }
+
                   }
                   else {
 
                     console.log(" ============================= local question exists, using local");
-                    this.loadNextQuestion(context, context.state);
+                    this.loadNextQuestion(context, state);
 
                   }
-
-
                 }
             }/>
             </View>
@@ -509,24 +536,12 @@ export const SurveyScreenShared =
       
     },
 
-    getFollowupQuestion: async function(context, currentAnswers) {
-      var i;
-      var followup;
-      console.log("====================================== GOING INTO LOOOOOOOOP =====================================");
-      for (i = 0; i < context.state.currentAnswers.length; i++) {
+    getFollowupQuestion: async function(context, followUpId) {
 
-        let answer = context.state.currentAnswers[i];
-        console.log("LOOOOOOPING =====================================");
-        console.log(answer);
-        if (answer.FollowUp == null) continue;
-        else { followup = answer; break; }
+      if (followUpId === undefined || followUpId === null ) return {hasFollowup: false};
 
-      }
-
-      if (followup === undefined || followup.FollowUp === undefined) return false;
-
-      //let urlstring = 'http://emad-uwa5206.herokuapp.com/getFollowUp/' + context.state.Username + "/" + followup.FollowUp; 
-      let urlstring = 'http://192.168.20.7:3000/getFollowUp/' + context.state.Username + "/" + followup.FollowUp;  
+      let urlstring = 'http://emad-uwa5206.herokuapp.com/getFollowUp/' + context.state.Username + "/" + followUpId; 
+      //let urlstring = 'http://192.168.20.7:3000/getFollowUp/' + context.state.Username + "/" + followUpId;  
         console.log("Url Answer Followup: " + urlstring);
 
       try {
@@ -575,8 +590,8 @@ export const SurveyScreenShared =
       let data = {
         method: 'POST',
       }
-      //let urlstring = 'http://emad-uwa5206.herokuapp.com/surveyAPI/' + context.state.Username;
-      let urlstring = 'http://192.168.20.7:3000/surveyAPI/' + context.state.Username;  
+      let urlstring = 'http://emad-uwa5206.herokuapp.com/surveyAPI/' + context.state.Username;
+      //let urlstring = 'http://192.168.20.7:3000/surveyAPI/' + context.state.Username;  
       console.log("Url Answer Next Question: " + urlstring);
       try {
         let response = await fetch(urlstring, data);
@@ -740,8 +755,8 @@ export const SurveyScreenShared =
       let type = "";
       if (msg == "Timer has started.") type = "EOQ";
       if (msg == "You have completed the survey.") type = "EOS";
-      //let urlstring = 'https://emad-uwa5206.herokuapp.com/diaryAPI/' + context.state.Username + "/" + context.state.SurveyId + "/" + type;
-      let urlstring = 'http://192.168.20.7:3000/diaryAPI/' + context.state.Username + "/" + context.state.SurveyId + "/" + type;
+      let urlstring = 'https://emad-uwa5206.herokuapp.com/diaryAPI/' + context.state.Username + "/" + context.state.SurveyId + "/" + type;
+      //let urlstring = 'http://192.168.20.7:3000/diaryAPI/' + context.state.Username + "/" + context.state.SurveyId + "/" + type;
       console.log(urlstring);
 
       let response = await fetch(urlstring, data); 
@@ -758,6 +773,9 @@ export const SurveyScreenShared =
       else {
         console.log("HTTP Error" + response.status);
       }
+
+      context.state.showLoadingModal = false;
+      context.forceUpdate();
 
       // .then((response) => response.json())
       //       .then((responseJson) => {
@@ -779,8 +797,7 @@ export const SurveyScreenShared =
     },
 
     toggleNextButton(context, enableButton) {
-      console.log("Enable Button: " + enableButton);
-      console.log("ForceAnswer: " + context.state.ForceAnswer);
+      
       if (enableButton && context.state.ForceAnswer === true) {
         console.log("I am enabling the next button.");
         context.state.ForceAnswer = false;
@@ -801,12 +818,45 @@ export const SurveyScreenShared =
       return <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
         {context.state.CurrentQuestionIndex === 0 ? null : <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, context.state, true)}/>}
         <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
-          { 
+          {
+            // Show loading screen
+            context.state.showLoadingModal = true;
+            context.forceUpdate();
 
             // If theres no next question locally
             if ((context.state.CurrentQuestionIndex + 1) === context.state.SurveyQuestions.length)  {
 
-              let GFQresponse = await this.getFollowupQuestion(context, context.state.currentAnswers);
+              var answerFollowup;
+              var questionFollowUp;
+
+              // Find followup in answer
+              for (var i = 0; i < context.state.currentAnswers.length; i++) {
+                let answer = context.state.currentAnswers[i];
+                if (answer.FollowUp == null) continue;
+                else { answerFollowup = answer; break; }
+              }
+              // Find followup in question
+              questionFollowUp = context.state.CurrentQuestion.FollowUp;
+              
+              let GFQresponse;
+              if (answerFollowup === undefined || answerFollowup.FollowUp === undefined) {
+                
+                if (questionFollowUp === undefined || questionFollowUp === null) {
+                    GFQresponse = await this.getFollowupQuestion(context, context.state.pendingQuestionIds.pop());
+                }
+                else {
+                  GFQresponse = await this.getFollowupQuestion(context, questionFollowUp);
+                }
+
+              }
+              else {
+                if (questionFollowUp !== undefined || questionFollowUp !== null) {
+                  context.state.pendingQuestionIds.push(questionFollowUp);
+                }
+                GFQresponse = await this.getFollowupQuestion(context, answerFollowup.FollowUp);
+              }
+
+              
               console.log("Has followup question: " + GFQresponse.hasFollowup);
               if (GFQresponse.hasFollowup) {
                 this.loadNextQuestion(context, context.state);
@@ -835,13 +885,13 @@ export const SurveyScreenShared =
               }
 
             }
-            else {
+          else {
 
-              console.log(" ============================= local question exists, using local");
-              this.loadNextQuestion(context, context.state);
+            console.log(" ============================= local question exists, using local");
+            this.loadNextQuestion(context, state);
 
-            }
           }
+        }
         }/>
       </View>
     },
@@ -852,6 +902,7 @@ export const SurveyScreenShared =
           var SurveyTitle = data.title;
           var SurveyType = data.type;
           var SurveyInterval = data.interval;
+          var followUp = data.followUp;
           
           // Create list of answers
           let answers = [];
@@ -877,7 +928,8 @@ export const SurveyScreenShared =
             Interval: SurveyInterval,
             Question: SurveyTitle,
             Type: SurveyType,
-            Answers: answers
+            Answers: answers,
+            FollowUp: followUp,
           };
 
           console.log(SurveyQuestion);
@@ -918,6 +970,14 @@ export const SurveyScreenShared =
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
         return false;
       }
+      else if (serverData.err === "The survey has expired.") {
+        context.state.ViewArray = [];
+
+        context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        context.state.ViewArray.push(<Text style={styles.sectionTitle}>Your survey has expired.</Text>);
+        context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        return false;
+      }
 
       return true;
     },
@@ -936,6 +996,7 @@ export const SurveyScreenShared =
           color: '#000',
           marginBottom: 15,
           marginHorizontal: 20,
+          textAlign: 'center',
         },
         sectionDescription: {
           marginTop: 8,
