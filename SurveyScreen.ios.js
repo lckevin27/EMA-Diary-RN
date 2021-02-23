@@ -33,6 +33,8 @@ class SurveyScreen extends React.Component {
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
       this.state.Password = navigation.getParam('password', 'Unable to find user data');
       PushNotificationIOS.requestPermissions();
+
+      SurveyScreenShared.loadNextQuestion(this, this.state);
     }
 
     componentDidMount() {
@@ -41,13 +43,12 @@ class SurveyScreen extends React.Component {
         RNRestart.Restart();
       });
 
-      SurveyScreenShared.loadNextQuestion(this, this.state);
     }
 
     sendNotification(context, seconds) {
-        setTimeout(function() {
-            PushNotificationIOS.presentLocalNotification({ alertBody: "A survey is ready to be taken!", alertAction: "view" });
-        }, seconds * 1000);
+        //setTimeout(function() {
+            PushNotificationIOS.addNotificationRequest({ alertBody: "A survey is ready to be taken!", alertAction: "view", fireDate: new Date(Date.now() + seconds * 1000) });
+        //}, seconds * 1000);
     }
   
     render() {

@@ -776,24 +776,6 @@ export const SurveyScreenShared =
 
       context.state.showLoadingModal = false;
       context.forceUpdate();
-
-      // .then((response) => response.json())
-      //       .then((responseJson) => {
-
-      //     // ============= on success ============== //
-      //     // Adjust notification time
-      //     console.log("ResponseJson");
-      //     console.log(responseJson);
-      //     //context.sendNotification(responseJson.interval);
-
-      //   }).catch((error) => {
-      //     // ============= on failure ============== //
-      //     console.log(error);
-      //     alert(error);
-      //     throw error;
-      // });
-
-      context.forceUpdate();
     },
 
     toggleNextButton(context, enableButton) {
@@ -952,14 +934,17 @@ export const SurveyScreenShared =
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
         context.state.ViewArray.push(<Text style={styles.sectionTitle}>An error has occured.</Text>);
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        context.forceUpdate();
         return false;
       }
       else if (serverData.err === "It's not time yet.") {
         context.state.ViewArray = [];
 
+        console.log("I AM EJECTING AND RETURNING FALSE")
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
         context.state.ViewArray.push(<Text style={styles.sectionTitle}>There is currently no survey available for you.</Text>);
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        context.forceUpdate();
         return false;
       }
       else if (serverData.err === "No Survey Assigned") {
@@ -968,6 +953,7 @@ export const SurveyScreenShared =
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
         context.state.ViewArray.push(<Text style={styles.sectionTitle}>There is currently no survey assigned to you.</Text>);
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        context.forceUpdate();
         return false;
       }
       else if (serverData.err === "The survey has expired.") {
@@ -976,6 +962,7 @@ export const SurveyScreenShared =
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
         context.state.ViewArray.push(<Text style={styles.sectionTitle}>Your survey has expired.</Text>);
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
+        context.forceUpdate();
         return false;
       }
 

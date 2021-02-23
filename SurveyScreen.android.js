@@ -32,14 +32,17 @@ class SurveyScreen extends React.Component {
       let serverData = navigation.getParam('serverData', 'Unable to find server data.');
 
       if (!SurveyScreenShared.CheckServerData(this, serverData)) {
+        console.log("I AM RETURNING WITHOUT DOING ANYTHING ELSE")
         return;
       }
-
+      console.log("I ESCAPED DEATH?")
       this.state.SurveyId = serverData.sId;
       this.state.SurveyQuestions = SurveyScreenShared.convertServerDataToSurvey(this, serverData.question);
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
       this.state.Password = navigation.getParam('password', 'Unable to find user data');
       console.log("========================= USERNAME: " + this.state.Username);
+
+      SurveyScreenShared.loadNextQuestion(this, this.state);
     }
 
     componentDidMount() {
@@ -83,7 +86,7 @@ class SurveyScreen extends React.Component {
       //     registerForPushNotifications();
       //   }, [])
 
-      SurveyScreenShared.loadNextQuestion(this, this.state);
+      // SurveyScreenShared.loadNextQuestion(this, this.state);
     }
 
     sendNotification(context, seconds) {
