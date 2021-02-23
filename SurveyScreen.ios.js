@@ -46,9 +46,12 @@ class SurveyScreen extends React.Component {
     }
 
     sendNotification(context, seconds) {
-        //setTimeout(function() {
-            PushNotificationIOS.addNotificationRequest({ alertBody: "A survey is ready to be taken!", alertAction: "view", fireDate: new Date(Date.now() + seconds * 1000) });
-        //}, seconds * 1000);
+      PushNotificationIOS.addNotificationRequest({       
+        id: "surveyNotification",
+        title: "A Survey is ready to be taken!",
+        body: "Please complete it as soon as possible.",
+        fireDate: new Date(new Date().valueOf() + seconds * 1000)
+      });
     }
   
     render() {
