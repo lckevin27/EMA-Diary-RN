@@ -38,6 +38,15 @@ class SurveyScreen extends React.Component {
       console.log("I ESCAPED DEATH?")
       this.state.SurveyId = serverData.sId;
       this.state.SurveyQuestions = SurveyScreenShared.convertServerDataToSurvey(this, serverData.question);
+
+      var msg = serverData.msg;
+      console.log("QUESTION MSG: " + msg);
+      if (msg === 'QEXP') {
+        modalText = "A question has expired.";
+        showLoadingModal = true;
+        showModalOkayButton = true;
+      }
+
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
       this.state.Password = navigation.getParam('password', 'Unable to find user data');
       console.log("========================= USERNAME: " + this.state.Username);
