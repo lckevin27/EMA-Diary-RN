@@ -15,7 +15,6 @@ import {
   import RadioForm from 'react-native-simple-radio-button';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
 
-
 export const SurveyScreenShared =
 {
 
@@ -43,6 +42,8 @@ export const SurveyScreenShared =
           ShowAlternateQuestion: false,
           ForceAnswer: false,
           showLoadingModal: false,
+          showModalOkayButton: false,
+          modalText: "Loading...",
           // ============ Checkbox ========== //
           IsCheckboxQuestion: true,
           Checkboxes: [], 
@@ -65,6 +66,15 @@ export const SurveyScreenShared =
           catValue: 2,
           CatAnswers: [],
         };
+  },
+
+  closeModal() {
+    showLoadingModal = false;
+
+    // reset to loading default (todo: handle the abstract case)
+    showModalOkayButton = false;
+    modalText = "Loading...";
+
   },
 
     getSampleQuestions : function() {
@@ -885,6 +895,14 @@ export const SurveyScreenShared =
           var SurveyType = data.type;
           var SurveyInterval = data.interval;
           var followUp = data.followUp;
+          var msg = data.msg;
+
+          console.log("QUESTION MSG: " + msg);
+          if (msg === 'QEXP') {
+            modalText = "A question has expired.";
+            showLoadingModal = true;
+            showModalOkayButton = true;
+          }
           
           // Create list of answers
           let answers = [];

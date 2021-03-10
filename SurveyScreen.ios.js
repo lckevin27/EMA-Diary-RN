@@ -139,9 +139,9 @@ class SurveyScreen extends React.Component {
                       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
                           <ActivityIndicator size="large" color="#00ff00" />
-                          <Text>Logging in...</Text>
+                          <Text>{this.state.modalText}</Text>
+                          {this.state.showModalOkayButton ? <Button onPress={SurveyScreenShared.closeModal()}>Ok</Button> : null}
                         </View>
-                        
                       </View>
                     </Modal>
                   </View> 
