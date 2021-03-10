@@ -33,11 +33,14 @@ class SurveyScreen extends React.Component {
 
       var msg = serverData.msg;
 
-      console.log("QUESTION MSG: " + msg);
+      console.log("============================================= QUESTION MSG: " + msg);
       if (msg === 'QEXP') {
-        modalText = "A question has expired.";
-        showLoadingModal = true;
-        showModalOkayButton = true;
+        setTimeout(() => {
+          this.state.modalText = "A question has expired.";
+          this.state.showLoadingModal = true;
+          this.state.showModalOkayButton = true;
+          this.forceUpdate();
+        }, 1000);
       }
 
       this.state.Username = navigation.getParam('username', 'Unable to find user data');
@@ -150,10 +153,10 @@ class SurveyScreen extends React.Component {
                   <View>
                     <Modal isVisible={this.state.showLoadingModal}>
                       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
-                          <ActivityIndicator size="large" color="#00ff00" />
-                          <Text>{this.state.modalText}</Text>
-                          {this.state.showModalOkayButton ? <Button onPress={SurveyScreenShared.closeModal()}>Ok</Button> : null}
+                        <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+                          {!this.state.showModalOkayButton ? <ActivityIndicator size="large" color="#00ff00" /> : null }
+                          <Text style={{fontSize: 16}}>{this.state.modalText}</Text>
+                          {this.state.showModalOkayButton ? <Button title="Ok" buttonStyle={{marginTop: 15, width: this.state.screenWidth / 3, height: this.state.screenHeight / 20}} onPress={() => {SurveyScreenShared.closeModal(this)}}></Button> : null}
                         </View>
                       </View>
                     </Modal>

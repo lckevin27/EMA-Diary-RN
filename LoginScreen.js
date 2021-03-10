@@ -116,7 +116,7 @@ class LoginScreen extends React.Component {
 
           // ============= on success ============== //
           this.state.showLoadingModal = false;
-          
+          this.forceUpdate();
 
           // Go to next screen with data
           console.log(responseJson);
