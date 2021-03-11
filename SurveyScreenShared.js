@@ -68,14 +68,13 @@ export const SurveyScreenShared =
         };
   },
 
-  closeModal(context) {
-    context.state.showLoadingModal = false;
+  closeModal() {
+    showLoadingModal = false;
 
     // reset to loading default (todo: handle the abstract case)
-    context.state.showModalOkayButton = false;
-    context.state.modalText = "Loading...";
+    showModalOkayButton = false;
+    modalText = "Loading...";
 
-    context.forceUpdate();
   },
 
     getSampleQuestions : function() {
@@ -896,6 +895,14 @@ export const SurveyScreenShared =
           var SurveyType = data.type;
           var SurveyInterval = data.interval;
           var followUp = data.followUp;
+          var msg = data.msg;
+
+          console.log("QUESTION MSG: " + msg);
+          if (msg === 'QEXP') {
+            modalText = "A question has expired.";
+            showLoadingModal = true;
+            showModalOkayButton = true;
+          }
           
           // Create list of answers
           let answers = [];

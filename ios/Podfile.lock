@@ -304,7 +304,7 @@ PODS:
     - React-Core
   - RNGestureHandler (1.9.0):
     - React-Core
-  - RNScreens (2.15.2):
+  - RNScreens (2.17.1):
     - React-Core
   - RNVectorIcons (6.7.0):
     - React
@@ -494,7 +494,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 32c7cbe1d43dff5f03f3d0b9e9d2c44d8ec91a3a
   RNCPushNotificationIOS: 5b1cf9ad2aaa107ecb92d5d2d7005ba521b2b97a
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
-  RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
+  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
   RNVectorIcons: 368d6d8b8301224e5ffb6254191f4f8876c2be0d
   toolbar-android: 404f4450b203597e7b417f714ff417bed562a1be
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6

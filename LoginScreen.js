@@ -138,57 +138,47 @@ class LoginScreen extends React.Component {
 
     return (
       <Fragment>
-        <SafeAreaView>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-  
-              <View style={{flex: 1, flexDirection: 'column', justifyContent:'space-between'}}>
-              <View style={{ height: 25, }}></View>
-  
-                <Image source={{uri: 'https://www.courseseeker.edu.au/assets/images/institutions/1055.png'}} style={{width: 330, height: 110,  margin: 5,}} resizeMode="contain" />
-  
-                <View>
-                  <View style={{ height: 50, }}></View>
-                  <View style={styles.body}>
-                    <View style={styles.sectionContainer}>
-                      <Text style={styles.sectionTitle}>Login</Text>
-                      <Text>Username: </Text>
-                      <TextInput
-                        style={styles.userInput}
-                        placeholder="Enter username here." 
-                        onChangeText={(value) => { this.state.username = value; }} defaultValue={this.state.username}/>
-                      <Text>Password: </Text>
-                      <TextInput
-                        style={styles.userInput}
-                        secureTextEntry={true}
-                        placeholder="Enter password here." onChangeText={(value) => { this.state.password = value; }} defaultValue={this.state.password}/>
-                        {this.state.error? <Text style={styles.errorMsg}>Incorrect username or password.</Text> : null}
-                      <View style={styles.rememberMeSwitch}>
-                        <Switch onValueChange={(value) => { this.state.rememberCredentials = value; this.forceUpdate(); }} value={this.state.rememberCredentials}/>
-                        <Text>Remember Me</Text>
-                      </View>
-                      <Button style={{height: 40, marginVertical: 10,}} onPress={() => { this.login(); }} title="Login" />
-                    </View>
-                  </View> 
+      <SafeAreaView>
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={styles.scrollView}>
+            <View style={{display: 'flex', flexDirection: 'column', justifyContent:'space-between', alignItems: 'center'}}>
+              <Image source={{uri: 'https://www.courseseeker.edu.au/assets/images/institutions/1055.png'}} style={styles.logo} resizeMode="contain" />
+              <View style={styles.sectionContainer}>
+                <Text style={styles.inputTitle}>Username</Text>
+                <TextInput
+                  style={styles.userInput}
+                  placeholder="Enter username here" 
+                  onChangeText={(value) => { this.state.username = value; }} defaultValue={this.state.username}/>
+                <Text style={styles.inputTitle}>Password </Text>
+                <TextInput
+                  style={styles.userInput}
+                  secureTextEntry={true}
+                  placeholder="Enter password here" onChangeText={(value) => { this.state.password = value; }} defaultValue={this.state.password}/>
+                  {this.state.error? <Text style={styles.errorMsg}>Incorrect username or password.</Text> : null}
+                <View style={styles.rememberMeSwitch}>
+                  <Switch onValueChange={(value) => { this.state.rememberCredentials = value; this.forceUpdate(); }} value={this.state.rememberCredentials}/>
+                  <Text style={styles.switchText}>Remember me</Text>
                 </View>
+                <View style={styles.loginBtn}>
+                  <Button onPress={() => { this.login(); }} title="Login" />
+                </View>
+              </View>
 
-                <View>
-                  <Modal isVisible={this.state.showLoadingModal}>
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                      <View style={{backgroundColor: '#FFF', width: 330, height: 110, justifyContent: 'center', alignItems: 'center' }}>
-                        <ActivityIndicator size="large" color="#00ff00" />
-                        <Text>Logging in...</Text>
-                      </View>
-                      
+              <View>
+                <Modal isVisible={this.state.showLoadingModal}>
+                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+                    <View style={{backgroundColor: '#FFF', width: 330, height: 130, justifyContent: 'center', alignItems: 'center', }}>
+                      <ActivityIndicator size="large" color="#00ff00" />
+                      <Text style={{marginTop: 10, color: '#333'}}>Logging in...</Text>
                     </View>
-                  </Modal>
-                </View> 
-  
-            </View>
-          </ScrollView>
-        </SafeAreaView>
-      </Fragment>
+                  </View>
+                </Modal>
+              </View> 
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </Fragment>
     );
   }
 };
@@ -199,29 +189,34 @@ const styles = StyleSheet.create({
     scrollView: {
       backgroundColor: '#FFF',
     },
-    body: {
-      backgroundColor: '#FFF',
-      textAlignVertical: 'center'
-    },
     sectionContainer: {
-      marginTop: 32,
       paddingHorizontal: 24,
-      padding: 10,
-      flex: 1,
+      width: '100%',
+      display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
     },
-    sectionTitle: {
-      fontSize: 24,
-      fontWeight: '600',
-      color: '#000',
+    logo: {
+      width: '80%', 
+      height: 110,  
+      marginVertical: 50,
+    },
+    inputTitle: {
+      fontSize: 16,
+      color: '#666',
+      fontWeight: '300'
     },
     userInput: {
-      height: 40, 
-      marginVertical: 5,
+      fontWeight: "300",
+      fontSize: 16,
+      padding: 8,
+      marginBottom: 15,
+      marginTop: 5,
       borderStyle: 'solid',
       borderWidth: 1,
-      borderColor: 'grey',
+      borderColor: '#CCC',
+      flexBasis: '100%',
+      borderRadius: 3,
     },
     errorMsg: {
       color: '#F00',
@@ -230,10 +225,20 @@ const styles = StyleSheet.create({
       marginBottom: 5,
     },
     rememberMeSwitch: {
-      flex: 1, 
-      flexDirection: 'row', 
-      marginVertical: 5, 
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+    }, 
+    switchText: {
+      color: '#666',
       marginHorizontal: 5,
-      textAlignVertical: "center",
+      fontSize: 14,
+    },
+    loginBtn: {
+      backgroundColor: '#FFF',
+      borderWidth: 1,
+      borderColor: '#007AFF',
+      borderRadius: 3,
     },
   });
