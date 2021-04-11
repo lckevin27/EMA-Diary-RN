@@ -704,7 +704,7 @@ export const SurveyScreenShared =
       context.state.sliderValue = value; 
 
       context.state.sliderText = "Value: " + context.state.sliderValue.toString();
-      context.state.Answers[context.state.CurrentQuestion] = context.state.sliderValue.toString();
+      context.state.Answers[context.state.CurrentQuestion.Question] = context.state.sliderValue.toString();
       context.forceUpdate();
     },
 
@@ -712,7 +712,7 @@ export const SurveyScreenShared =
       context.state.catValue = value; 
 
       context.state.catSliderText = "Value: " + context.state.CatAnswers[context.state.catValue];
-      context.state.Answers[context.state.CurrentQuestion] = context.state.catValue; //context.state.CatAnswers[context.state.catValue];
+      context.state.Answers[context.state.CurrentQuestion.Question] = context.state.catValue.toString(); //context.state.CatAnswers[context.state.catValue];
       context.forceUpdate();
     },
 
@@ -733,12 +733,13 @@ export const SurveyScreenShared =
       context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 30, marginHorizontal: 25 }} />);
 
       let result = []
-
+      
       for (var key in context.state.Answers) {
         var ans = context.state.Answers[key];
 
         //let answer = { stitle: context.state.SurveyTitle, qtitle: key, answer: ans };
         let answer = { "id": context.state.SurveyId, "question": key, "answer": ans };
+        console.log(answer);
         result.push(answer);
       }
 
