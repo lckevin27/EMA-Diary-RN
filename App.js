@@ -6,6 +6,11 @@ import SurveyScreen from './SurveyScreen';
 const MainNavigator = createStackNavigator({
   Login:  LoginScreen,
   Survey:  SurveyScreen,
+}, {
+  defaultNavigationOptions: {
+    gesturesEnabled: false,
+    swipeEnabled: false
+  }
 });
 
 const App = createAppContainer(MainNavigator);

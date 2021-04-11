@@ -697,7 +697,7 @@ export const SurveyScreenShared =
       }
 
       this.toggleNextButton(context, hasOneChecked);
-      context.state.Answers[context.state.CurrentQuestion] = answer;
+      context.state.Answers[context.state.CurrentQuestion.Question] = answer;
     },
 
     updateSlider(context, value) {
