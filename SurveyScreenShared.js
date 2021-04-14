@@ -221,7 +221,8 @@ export const SurveyScreenShared =
         context.state.CurrentQuestionText = currentQuestion.Question;
         console.log("================================== current question");
         console.log(currentQuestion);
-        context.state.ForceAnswer = (context.state.CurrentQuestion.Compulsory !== undefined) ? context.state.CurrentQuestion.Compulsory : true;
+        console.log("Compulsory: " + context.state.CurrentQuestion.Compulsory);
+        context.state.ForceAnswer = (context.state.CurrentQuestion.Compulsory !== undefined) ? context.state.CurrentQuestion.Compulsory : false;
         let surveyAnswers = currentQuestion.Answers;
 
         // ================================= CHECKBOXES ==================================== //
@@ -687,9 +688,9 @@ export const SurveyScreenShared =
 
         if (context.state.Checkboxes[i].checked) {
 
-          if (answer == "") answer += context.state.Checkboxes[i].option;
+          if (answer == "") answer += i;//context.state.Checkboxes[i].option;
           else {
-            answer += (", " + context.state.Checkboxes[i].option);
+            answer += (", " + i);//context.state.Checkboxes[i].option);
           }
 
           hasOneChecked = true;
@@ -896,6 +897,7 @@ export const SurveyScreenShared =
           var SurveyType = data.type;
           var SurveyInterval = data.interval;
           var followUp = data.followUp;
+          var compulsory = data.Compulsory;
           var msg = data.msg;
 
           console.log("QUESTION MSG: " + msg);
@@ -931,6 +933,7 @@ export const SurveyScreenShared =
             Type: SurveyType,
             Answers: answers,
             FollowUp: followUp,
+            Compulsory: compulsory
           };
 
           console.log(SurveyQuestion);
