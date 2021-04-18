@@ -68,13 +68,13 @@ export const SurveyScreenShared =
         };
   },
 
-  closeModal() {
-    showLoadingModal = false;
+  closeModal(context) {
+    context.state.showLoadingModal = false;
 
     // reset to loading default (todo: handle the abstract case)
-    showModalOkayButton = false;
+    context.state.showModalOkayButton = false;
     modalText = "Loading...";
-
+    context.forceUpdate();
   },
 
     getSampleQuestions : function() {
@@ -156,44 +156,6 @@ export const SurveyScreenShared =
         SurveyQuestions.push(sq);
 
         return SurveyQuestions;
-
-        var SurveyId = serverData._id;
-        var SurveyTitle = serverData.title;
-        var SurveyType = serverData.type;
-        var SurveyInterval = serverData.interval;
-  
-        for (var i = 0; i < serverData.content.length; i++)
-        {
-          console.log(serverData.content);
-          let SQ = serverData.content[i];
-  
-          // Create list of answers
-          let answers = [];
-          for (var j = 0; j < serverData.content.length; j++) {
-            
-            let SQid = SQ._id;
-            let SQans = SQ.title[j];
-
-            // =======================================
-            let ansObj = {
-              Id: SQid,
-              Answer: SQans
-            }
-  
-            answers.push(ansObj);
-          }
-  
-          let SurveyQuestion = { 
-            Id: SurveyId,
-            Interval: SurveyInterval,
-            Question: SurveyTitle,
-            Type: SurveyType,
-            Answers: answers
-           };
-          SurveyQuestions.push(SurveyQuestion);
-        }
-
-        return SurveyQuestions;
     },
 
     loadNextQuestion : async function(context, state, goBackwards = false) {
@@ -228,7 +190,7 @@ export const SurveyScreenShared =
         // ================================= CHECKBOXES ==================================== //
         if (currentQuestion.Type === "multiple") { 
             // Create answer entry
-            context.state.Answers[currentQuestion.Question] = [];
+            context.state.Answers[currentQuestion.Question] = ""; //[];
             context.state.IsCheckboxQuestion = true;
             context.state.ShowAlternateQuestion = true;
 
@@ -688,9 +650,9 @@ export const SurveyScreenShared =
 
         if (context.state.Checkboxes[i].checked) {
 
-          if (answer == "") answer += i;//context.state.Checkboxes[i].option;
+          if (answer == "") answer += i.toString();//context.state.Checkboxes[i].option;
           else {
-            answer += (", " + i);//context.state.Checkboxes[i].option);
+            answer += (", " + i.toString());//context.state.Checkboxes[i].option);
           }
 
           hasOneChecked = true;
@@ -699,6 +661,7 @@ export const SurveyScreenShared =
 
       this.toggleNextButton(context, hasOneChecked);
       context.state.Answers[context.state.CurrentQuestion.Question] = answer;
+      console.log("CHECKBOX ANSWER = " + answer)
     },
 
     updateSlider(context, value) {
