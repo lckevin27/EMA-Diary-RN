@@ -54,7 +54,7 @@ class SurveyScreen extends React.Component {
       this.state.Password = navigation.getParam('password', 'Unable to find user data');
       PushNotificationIOS.requestPermissions();
 
-      SurveyScreenShared.loadNextQuestion(this, this.state);
+      SurveyScreenShared.loadNextQuestion(this);
     }
 
     componentDidMount() {

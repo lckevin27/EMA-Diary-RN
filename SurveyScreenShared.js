@@ -73,7 +73,7 @@ export const SurveyScreenShared =
 
     // reset to loading default (todo: handle the abstract case)
     context.state.showModalOkayButton = false;
-    modalText = "Loading...";
+    context.state.modalText = "Loading...";
     context.forceUpdate();
   },
 
@@ -158,7 +158,7 @@ export const SurveyScreenShared =
         return SurveyQuestions;
     },
 
-    loadNextQuestion : async function(context, state, goBackwards = false) {
+    loadNextQuestion : async function(context, goBackwards = false) {
         context.state.ViewArray = []
         context.state.IsCheckboxQuestion = false;
         context.state.ShowAlternateQuestion = false;
@@ -194,7 +194,7 @@ export const SurveyScreenShared =
             context.state.IsCheckboxQuestion = true;
             context.state.ShowAlternateQuestion = true;
 
-            this.constructCheckboxes(state, surveyAnswers);
+            this.constructCheckboxes(context.state, surveyAnswers);
         }
         // ================================= BUTTONS ==================================== //
         else if (currentQuestion.Type === "single") {
@@ -312,10 +312,10 @@ export const SurveyScreenShared =
         // if (state.CurrentQuestionIndex == state.SurveyQuestions.length - 1) {
         //     state.ViewArray.push(
         //     <View style={{flex: 1, flexDirection: 'row', justifyContent:'space-between'}}>
-        //         <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, state, true)}/>
+        //         <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>
         //         <Button large title="Submit" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: state.screenWidth / 2.2}} onPress={() => {
         //         if(this.checkAndAppendFollowUp(context, currentAnswers)) {
-        //             this.loadNextQuestion(context, state);
+        //             this.loadNextQuestion(context);
         //         } else {
         //             this.submitData(context);
         //         }
@@ -371,7 +371,7 @@ export const SurveyScreenShared =
                     
                     console.log("Has followup question: " + GFQresponse.hasFollowup);
                     if (GFQresponse.hasFollowup) {
-                      this.loadNextQuestion(context, context.state);
+                      this.loadNextQuestion(context);
                     }
                     else {
 
@@ -386,7 +386,7 @@ export const SurveyScreenShared =
                         let GNGQresponse = await this.getNextQuestion(context); 
                         console.log("Has next question: " + GNGQresponse.hasNextQuestion);
                         if (GNGQresponse.hasNextQuestion) {
-                          this.loadNextQuestion(context, context.state);
+                          this.loadNextQuestion(context);
                         }
                         else {
                           console.log("Submitting data...");
@@ -400,7 +400,7 @@ export const SurveyScreenShared =
                   else {
 
                     console.log(" ============================= local question exists, using local");
-                    this.loadNextQuestion(context, state);
+                    this.loadNextQuestion(context);
 
                   }
                 }
@@ -412,7 +412,7 @@ export const SurveyScreenShared =
         else {
             context.state.ViewArray.push(
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'center'}}>
-            <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, context.state, true)}/>
+            <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>
             <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
                 { 
                   // Show loading screen
@@ -455,7 +455,7 @@ export const SurveyScreenShared =
                     
                     console.log("Has followup question: " + GFQresponse.hasFollowup);
                     if (GFQresponse.hasFollowup) {
-                      this.loadNextQuestion(context, context.state);
+                      this.loadNextQuestion(context);
                     }
                     else {
 
@@ -470,7 +470,7 @@ export const SurveyScreenShared =
                         let GNGQresponse = await this.getNextQuestion(context); 
                         console.log("Has next question: " + GNGQresponse.hasNextQuestion);
                         if (GNGQresponse.hasNextQuestion) {
-                          this.loadNextQuestion(context, context.state);
+                          this.loadNextQuestion(context);
                         }
                         else {
                           console.log("Submitting data...");
@@ -484,7 +484,7 @@ export const SurveyScreenShared =
                   else {
 
                     console.log(" ============================= local question exists, using local");
-                    this.loadNextQuestion(context, state);
+                    this.loadNextQuestion(context);
 
                   }
                 }
@@ -773,7 +773,7 @@ export const SurveyScreenShared =
 
     getNextButton(context) {
       return <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
-        {context.state.CurrentQuestionIndex === 0 ? null : <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, context.state, true)}/>}
+        {context.state.CurrentQuestionIndex === 0 ? null : <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>}
         <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
           {
             // Show loading screen
@@ -816,7 +816,7 @@ export const SurveyScreenShared =
               
               console.log("Has followup question: " + GFQresponse.hasFollowup);
               if (GFQresponse.hasFollowup) {
-                this.loadNextQuestion(context, context.state);
+                this.loadNextQuestion(context);
               }
               else {
 
@@ -831,7 +831,7 @@ export const SurveyScreenShared =
                   let GNGQresponse = await this.getNextQuestion(context); 
                   console.log("Has next question: " + GNGQresponse.hasNextQuestion);
                   if (GNGQresponse.hasNextQuestion) {
-                    this.loadNextQuestion(context, context.state);
+                    this.loadNextQuestion(context);
                   }
                   else {
                     console.log("Submitting data...");
@@ -845,7 +845,7 @@ export const SurveyScreenShared =
           else {
 
             console.log(" ============================= local question exists, using local");
-            this.loadNextQuestion(context, state);
+            this.loadNextQuestion(context);
 
           }
         }
