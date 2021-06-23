@@ -8,8 +8,6 @@ import {
     View,
     Text,
     Image,
-    TextInput,
-    Dimensions,
     Switch,
     ActivityIndicator,
     Alert

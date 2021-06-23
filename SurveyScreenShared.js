@@ -1,19 +1,13 @@
 import React, {Fragment} from 'react';
 import {
-    SafeAreaView,
     StyleSheet,
-    ScrollView,
     View,
     Text,
-    Image,
     TextInput,
     Dimensions,
-    Switch,
-    ActivityIndicator
   } from 'react-native';
   import {  Divider, Button, Slider } from 'react-native-elements';
   import RadioForm from 'react-native-simple-radio-button';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
 
 export const SurveyScreenShared =
 {
@@ -260,7 +254,6 @@ export const SurveyScreenShared =
             context.state.ShowAlternateQuestion = true;
             
             // Create answer entry
-            context.state.Answers[currentQuestion.Question] = "";
             for (var i = 0; i < surveyAnswers.length; i++) {
             let answer = surveyAnswers[i]; 
             let option = answer.Answer;
@@ -272,6 +265,7 @@ export const SurveyScreenShared =
             context.state.sliderValue = context.state.sliderMinValue;
             context.state.sliderText = "Value: " + context.state.sliderValue.toString();
             context.state.ForceAnswer = false;
+            context.state.Answers[currentQuestion.Question] = context.state.sliderValue.toString();
         }
         else if (currentQuestion.Type === "cas") {
 
@@ -280,7 +274,6 @@ export const SurveyScreenShared =
           context.state.CatAnswers = []
           
           // Create answer entry
-          context.state.Answers[currentQuestion.Question] = "";
           for (var i = 0; i < surveyAnswers.length; i++) {
             let answer = surveyAnswers[i]; 
             let option = answer.Answer;
@@ -294,6 +287,7 @@ export const SurveyScreenShared =
           context.state.catValue = context.state.catMinValue;
           context.state.catSliderText = "Value: " + context.state.CatAnswers[context.state.catValue];
           context.state.ForceAnswer = false;
+          context.state.Answers[currentQuestion.Question] = context.state.CatAnswers[context.state.catValue];
 
         }
         context.state.ViewArray.push(<Divider style={{ backgroundColor: 'grey', marginVertical: 35, marginHorizontal: 25 }} />);
@@ -411,8 +405,8 @@ export const SurveyScreenShared =
         // ======================== A Question In The Middle, Show Back and Next button ========================= //
         else {
             context.state.ViewArray.push(
-            <View style={{flex: 1, flexDirection: 'row', justifyContent:'center'}}>
-            <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>
+            <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
+            {/* <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/> */}
             <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
                 { 
                   // Show loading screen
@@ -773,7 +767,7 @@ export const SurveyScreenShared =
 
     getNextButton(context) {
       return <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
-        {context.state.CurrentQuestionIndex === 0 ? null : <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>}
+        {/* {context.state.CurrentQuestionIndex === 0 ? null : <Button large title="Back" buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={() => this.loadNextQuestion(context, true)}/>} */}
         <Button large title="Next" disabled={context.state.ForceAnswer} buttonStyle={{marginVertical: 5, marginHorizontal: 5, alignSelf: 'stretch', width: context.state.screenWidth / 2.2}} onPress={async () =>
           {
             // Show loading screen
